@@ -511,6 +511,52 @@ GET    /api/v1/admin/orders/{id}/history   - Get status change history
 
 ---
 
+### Step 3.4: Product Tags & Attributes System
+
+**Goal:** Enable product tagging for better organization and filtering
+
+**Product Tags Table:**
+```sql
+- id (PK)
+- product_id (FK to products.id)
+- tag_name (String, indexed)
+- created_at (Timestamp)
+- UNIQUE constraint on (product_id, tag_name)
+```
+
+**Admin Endpoints:**
+```
+POST   /api/v1/admin/products/{id}/tags      - Add tags to product
+DELETE /api/v1/admin/products/{id}/tags/{tag} - Remove tag from product
+GET    /api/v1/admin/tags                    - List all available tags
+```
+
+**Public Endpoints (for later use in search):**
+```
+GET /api/v1/products?tags=wireless,bluetooth - Filter products by tags
+GET /api/v1/tags                             - List popular tags
+```
+
+**Use Cases:**
+- Admin can tag products: "Featured", "Best Seller", "New Arrival"
+- Admin can create promotional collections via tags
+- Foundation for advanced search (Phase 4+)
+- Badge display on product cards
+
+**Admin Panel Integration:**
+- Add tag management UI in React Admin
+- Tag input field when creating/editing products
+- Display tags on product list
+
+**You'll learn:**
+- Many-to-many relationships via junction tables
+- Tag normalization (lowercase, trimming)
+- Admin CRUD operations
+- Database schema evolution (adding tables to existing schema)
+- Backward-compatible migrations
+
+---
+
 ## Phase 4: Caching & Performance (Week 6)
 
 ### Step 4.1: Redis Caching
