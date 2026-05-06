@@ -12,11 +12,13 @@ Cart Lifecycle:
 - Converted to order during checkout
 """
 
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, CheckConstraint
+from sqlalchemy import Column, String, ForeignKey, DateTime, CheckConstraint
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
 from datetime import datetime, timedelta
+import uuid
 
 
 class Cart(Base):
@@ -28,15 +30,15 @@ class Cart(Base):
     """
     __tablename__ = "carts"
 
-    # Primary Key
-    id = Column(Integer, primary_key=True, index=True)
+    # Primary Key (UUID)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
 
     # Cart Ownership (mutually exclusive)
     # For guest users: random session ID (UUID) stored in cookie
     session_id = Column(String, unique=True, index=True, nullable=True)
 
     # For authenticated users: foreign key to users table
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True, index=True)
 
     # Database constraint: at least one of session_id or user_id must be set
     # Note: This constraint ensures we know who owns the cart

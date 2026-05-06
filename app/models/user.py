@@ -6,10 +6,12 @@ Guest users can place orders with email only (user_id will be NULL in orders).
 Registered users get full account features.
 """
 
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy import Column, String, Boolean, DateTime
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
+import uuid
 
 
 class User(Base):
@@ -21,8 +23,8 @@ class User(Base):
     """
     __tablename__ = "users"
 
-    # Primary Key
-    id = Column(Integer, primary_key=True, index=True)
+    # Primary Key (UUID for security and distributed system compatibility)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
 
     # Authentication & Contact
     email = Column(String, unique=True, index=True, nullable=False)
