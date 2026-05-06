@@ -5,11 +5,13 @@ Orders can be placed by both guest and registered users.
 Each order tracks customer info, shipping details, and status.
 """
 
-from sqlalchemy import Column, Integer, String, Numeric, ForeignKey, DateTime, Enum as SQLEnum, JSON
+from sqlalchemy import Column, String, Numeric, ForeignKey, DateTime, Enum as SQLEnum, JSON
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
 import enum
+import uuid
 
 
 class OrderStatus(enum.Enum):
@@ -40,8 +42,8 @@ class Order(Base):
     """
     __tablename__ = "orders"
 
-    # Primary Key
-    id = Column(Integer, primary_key=True, index=True)
+    # Primary Key (UUID)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
 
     # Order Identification
     # order_number: Human-readable unique identifier (e.g., "ORD-20260504-0001")
@@ -50,7 +52,7 @@ class Order(Base):
 
     # Customer Information
     # user_id: NULL for guest orders, set for registered users
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True, index=True)
 
     # Email & phone are required for ALL orders (guest or registered)
     # For registered users, we copy from user profile

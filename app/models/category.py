@@ -10,10 +10,12 @@ Categories can have parent-child relationships:
 This enables browsing by category hierarchy.
 """
 
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, String, ForeignKey, DateTime
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
+import uuid
 
 
 class Category(Base):
@@ -25,8 +27,8 @@ class Category(Base):
     """
     __tablename__ = "categories"
 
-    # Primary Key
-    id = Column(Integer, primary_key=True, index=True)
+    # Primary Key (UUID)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
 
     # Category Information
     name = Column(String, unique=True, index=True, nullable=False)
@@ -35,7 +37,7 @@ class Category(Base):
 
     # Hierarchical Structure
     # parent_id points to another category (or NULL for top-level categories)
-    parent_id = Column(Integer, ForeignKey("categories.id"), nullable=True, index=True)
+    parent_id = Column(UUID(as_uuid=True), ForeignKey("categories.id"), nullable=True, index=True)
 
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)

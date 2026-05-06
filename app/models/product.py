@@ -5,10 +5,12 @@ Products belong to categories and can be added to carts or orders.
 We track inventory (stock) and active status for availability management.
 """
 
-from sqlalchemy import Column, Integer, String, Text, Numeric, Boolean, ForeignKey, DateTime
+from sqlalchemy import Column, String, Text, Numeric, Boolean, ForeignKey, DateTime, Integer
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
+import uuid
 
 
 class Product(Base):
@@ -20,8 +22,8 @@ class Product(Base):
     """
     __tablename__ = "products"
 
-    # Primary Key
-    id = Column(Integer, primary_key=True, index=True)
+    # Primary Key (UUID)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
 
     # Product Information
     name = Column(String, index=True, nullable=False)
@@ -39,7 +41,7 @@ class Product(Base):
     stock = Column(Integer, default=0, nullable=False)
 
     # Category Association
-    category_id = Column(Integer, ForeignKey("categories.id"), nullable=False, index=True)
+    category_id = Column(UUID(as_uuid=True), ForeignKey("categories.id"), nullable=False, index=True)
 
     # Status
     # is_active: Controls if product is visible/purchasable

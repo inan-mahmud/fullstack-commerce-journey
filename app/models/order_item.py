@@ -14,9 +14,11 @@ and what you paid at that moment.
 """
 
 from sqlalchemy import Column, Integer, String, Numeric, ForeignKey, DateTime
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
+import uuid
 
 
 class OrderItem(Base):
@@ -36,15 +38,15 @@ class OrderItem(Base):
     """
     __tablename__ = "order_items"
 
-    # Primary Key
-    id = Column(Integer, primary_key=True, index=True)
+    # Primary Key (UUID)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
 
     # Foreign Keys
-    order_id = Column(Integer, ForeignKey("orders.id", ondelete="CASCADE"), nullable=False, index=True)
+    order_id = Column(UUID(as_uuid=True), ForeignKey("orders.id", ondelete="CASCADE"), nullable=False, index=True)
     # ondelete="CASCADE": when order is deleted, all items are deleted too
 
     # Product Reference (for lookups/analytics)
-    product_id = Column(Integer, ForeignKey("products.id"), nullable=False, index=True)
+    product_id = Column(UUID(as_uuid=True), ForeignKey("products.id"), nullable=False, index=True)
     # Note: We keep product_id even though we snapshot data
     # Useful for: "Show me all orders containing this product"
 
